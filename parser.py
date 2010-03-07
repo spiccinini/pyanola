@@ -1,4 +1,4 @@
-from model import Partitura, Note
+from model import Score, Note
 
 def SSVParse(filename):
     g = open(filename)
@@ -15,4 +15,4 @@ def SSVParse(filename):
             if playing[height] is not None:
                 note = Note(playing[height], height, delay-playing[height])
                 notes.append(note)
-    return Partitura(notes)
+    return Score(notes)

@@ -1,7 +1,7 @@
 import os
 import time
 import sys
-from model import Partitura, Note
+from model import Score, Note
 from parser import SSVParse
 
 from mingus.containers import *
@@ -9,8 +9,8 @@ from mingus.midi import MidiFileIn
 
 
 class TextView(object):
-    def __init__(self, partitura):
-        self.partitura = partitura
+    def __init__(self, score):
+        self.score = score
         self.tick = 100
         self.width = 50
         self.height = 61
@@ -26,7 +26,7 @@ class TextView(object):
         notes = []
         lines = [""] * self.height
         for instant in range(self.time, self.time + self.width * self.tick, self.tick):
-            notes.append(self.partitura.sounding_at(instant))
+            notes.append(self.score.sounding_at(instant))
         notes.reverse()
 
         i = 0
@@ -52,7 +52,6 @@ class TextView(object):
         for line in lines:
             print line
 
-#example = Partitura([Nota(0, 3, 300), Nota(0, 5, 300), Nota(400, 8, 300), Nota(800, 13, 600)])
 from mingus.midi import fluidsynth
 from mingus.containers import NoteContainer
 
@@ -69,7 +68,7 @@ class FluidSynthSequencer(object):
 
 def main():
     #composition = MidiFileIn.MIDI_to_Composition('test.mid')
-    #score = Partitura.from_track(composition[0].tracks[4])
+    #score = Score.from_track(composition[0].tracks[4], bpm=90)
     score = SSVParse('libertango_piano.txt')
     score.shift_all_notes(2000)
     view = TextView(score)
@@ -88,7 +87,7 @@ def main():
         if start_time > now:
             time.sleep(start_time - now)
 
-        
+
 
 if __name__ == '__main__':
     main()
