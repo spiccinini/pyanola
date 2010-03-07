@@ -36,10 +36,15 @@ class Partitura(object):
                 self.notes[note.delay] = set()
             self.notes[note.delay].add(note)
 
-    def sounding_at(self, delay): 
+    _sounding_at_cache = {}
+
+    def sounding_at(self, delay):
+        if delay in self._sounding_at_cache:
+            return self._sounding_at_cache[delay]
         result = self._starts_at(delay)
         for i in range(60):
             result.update(n for n in self._starts_at(delay-i*self.tick) if n.sounding_at(delay))
+        self._sounding_at_cache[delay] = result
         return result
 
     def _starts_at(self, delay):
