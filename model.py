@@ -10,6 +10,12 @@ class Note(object):
         nota = self.height % 12
         return "%s%s" % (self.names[nota], octava)
 
+    def fluidsynthname(self):
+        """Name we can feed to fluidsynth"""
+        octave = self.height / 12
+        note = self.height % 12
+        return "%s-%s" % (self.names[note].strip(), octave)
+
     def __eq__(self, other):
         return self.height == other.height
 

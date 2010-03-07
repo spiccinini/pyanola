@@ -53,20 +53,39 @@ class TextView(object):
             print line
 
 #example = Partitura([Nota(0, 3, 300), Nota(0, 5, 300), Nota(400, 8, 300), Nota(800, 13, 600)])
+from mingus.midi import fluidsynth
+from mingus.containers import NoteContainer
+
+class FluidSynthSequencer(object):
+    def __init__(self, score):
+        self.score = score
+        self.time = 0
+        self.tick = 100
+    def play_next(self):
+        notes = self.score._starts_at(self.time)
+        container = NoteContainer([note.fluidsynthname() for note in notes])
+        fluidsynth.play_NoteContainer(container)
+        self.time += self.tick
 
 def main():
     #composition = MidiFileIn.MIDI_to_Composition('test.mid')
     #score = Partitura.from_track(composition[0].tracks[4])
     score = SSVParse('libertango_piano.txt')
     view = TextView(score)
+    sequencer = FluidSynthSequencer(score)
     clear = os.popen("clear").read()
     g = open('times.txt', 'w')
     start_time = time.time()
+    fluidsynth.init('soundfont.sf2', 'oss')
+
     for i in range(max(score.notes.keys()) / view.tick):
         start_time += .1
         sys.stdout.write(clear)
         view.print_next()
-        time.sleep(start_time - time.time())
+        sequencer.play_next()
+        now = time.time()
+        if start_time > now:
+            time.sleep(start_time - now)
 
         
 
