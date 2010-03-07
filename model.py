@@ -15,8 +15,9 @@ class Note(object):
 
     def sounding_at(self, delay):
         return self.delay <= delay <= self.delay + self.duration
-    def __str__(self):
-        return self.name()
+
+    def __repr__(self):
+        return "<Note: %s %s>" % (self.name(), self.duration)
 
 class Partitura(object):
     def __init__(self, notes):
@@ -38,6 +39,20 @@ class Partitura(object):
     def _starts_at(self, delay):
         return self.notes.get(delay, set())
         
+    @classmethod
+    def from_track(cls, track):
+        notes = []
+        delay_per_bar =  1000
+        for i, bar in enumerate(track):
+            for note in bar:
+                delay = (note[0] + i) * delay_per_bar
+                for n in note[2].notes:
+                    height = int(n) + 20
+                    duration = note[1] * (delay_per_bar / 18)
+                    notes.append(Note(delay, height, duration))
+
+        instance = Partitura(notes)
+        return instance
 
 
 

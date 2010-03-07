@@ -4,6 +4,9 @@ import sys
 from model import Partitura, Note
 from parser import SSVParse
 
+from mingus.containers import *
+from mingus.midi import MidiFileIn
+
 
 class TextView(object):
     def __init__(self, partitura):
@@ -33,10 +36,11 @@ class TextView(object):
             else:
                 template = "%s"
             for note in instant:
-                if note.delay < (self.width - i - 1) * self.tick + self.time:
-                    lines[self.h2l[note.height]] +=template%"..."
-                else:
-                    lines[self.h2l[note.height]]+=template%note.name()
+                if len(lines[self.h2l[note.height]]) < 3 * i:
+                    if note.delay < (self.width - i - 1) * self.tick + self.time:
+                        lines[self.h2l[note.height]] +=template%"..."
+                    else:
+                        lines[self.h2l[note.height]]+=template%note.name()
             for line_index, line in enumerate(lines):
                 stripe = ['---', '   '][line_index % 2]
                 if len(line) < 3 * i:
@@ -51,6 +55,8 @@ class TextView(object):
 #example = Partitura([Nota(0, 3, 300), Nota(0, 5, 300), Nota(400, 8, 300), Nota(800, 13, 600)])
 
 def main():
+    #composition = MidiFileIn.MIDI_to_Composition('test.mid')
+    #score = Partitura.from_track(composition[0].tracks[4])
     score = SSVParse('libertango_piano.txt')
     view = TextView(score)
     clear = os.popen("clear").read()
