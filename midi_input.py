@@ -5,42 +5,6 @@ import os
 import mingus.core.notes as notes
 import mingus.containers.Note as Note
 
-speed = 100
-
-class Note2(object):
-    def __init__(self, channel, note, vol, starttime):
-        self.vol = int(vol)
-        self.note = note
-        self.channel = channel
-        self.selected = False
-        self.starttime = starttime
-        super(Note, self).__init__(0, 0, 0, 255, width=speed*30, height=5)
-        self.updatePosition()
-
-class Partitura(object):
-    def __init__(self, filename):
-        f = open(filename)
-        tones = [None] * 128
-        self.notes = []
-        for line in f:
-            parts = [x.strip() for x in line.split()]
-            stamp = float(parts[0])
-            note = int(parts[1])
-            vol = int(parts[2])
-            channel = 0
-            if len(parts) == 4:
-                channel = int(parts[3])
-            if vol == 0:
-                assert(tones[note] is not None)
-                tones[note].finish(stamp)
-                self.notes.append(tones[note])
-                tones[note] = None
-            else:
-                assert(tones[note] is None)
-                new_note = Note(channel, note, vol, stamp)
-                tones[note] = new_note
-
-
 NOTE_OFF = 0x80
 NOTE_ON = 0x90
 PROGRAM_CHANGE = 0xc0
