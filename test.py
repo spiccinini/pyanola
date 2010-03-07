@@ -14,7 +14,7 @@ class TextView(object):
         self.tick = 100
         self.width = 50
         self.height = 61
-        self.time = -self.tick * self.width
+        self.time = 0
         a = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6]
         self.h2l = []
         for i in range(100):
@@ -71,6 +71,7 @@ def main():
     #composition = MidiFileIn.MIDI_to_Composition('test.mid')
     #score = Partitura.from_track(composition[0].tracks[4])
     score = SSVParse('libertango_piano.txt')
+    score.shift_all_notes(2000)
     view = TextView(score)
     sequencer = FluidSynthSequencer(score)
     clear = os.popen("clear").read()

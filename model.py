@@ -60,5 +60,12 @@ class Partitura(object):
         instance = Partitura(notes)
         return instance
 
-
+    def shift_all_notes(self, delay):
+        new_notes = {}
+        for d in self.notes:
+            new_notes[delay+d] = set()
+            for note in self.notes[d]:
+                note.delay += delay
+                new_notes[note.delay].add(note)
+        self.notes = new_notes
 
