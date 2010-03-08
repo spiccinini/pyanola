@@ -10,6 +10,7 @@ NOTE_ON = 0x90
 PROGRAM_CHANGE = 0xc0
 ACTIVE_SENSING = 0xfe
 CONTROLLER = 0xb0
+PITCH_BEND = 0xe0
 
 class MidiEvent(object):
     def __init__(self, command, data1=None, data2=None):
@@ -49,7 +50,7 @@ class MidiInput(object):
         command = ord(self.stream.read(1))
         while command == ACTIVE_SENSING:
             command = ord(self.stream.read(1))
-        if command & 0xf0 in [NOTE_OFF, NOTE_ON, CONTROLLER]:
+        if command & 0xf0 in [NOTE_OFF, NOTE_ON, CONTROLLER, PITCH_BEND]:
             data1, data2 = self.stream.read(2)
             return MidiEvent(command, ord(data1), ord(data2))
         else:
