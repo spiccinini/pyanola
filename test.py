@@ -33,7 +33,7 @@ def main():
         dt_ticks = dt * 1000
         sys.stdout.write(clear)
         view.step(dt_ticks)
-        #sequencer.step(dt_ticks)
+        sequencer.step(dt_ticks)
         events = []
         while True:
             event = keyboard.poll()
