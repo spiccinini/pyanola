@@ -29,10 +29,10 @@ class MidiPlayer(object):
                 'NOTE_ON')
         notes_off = (e.to_ming_note() for e in events if e.command_type ==
                 'NOTE_OFF')
+        for note in notes_off:
+            self.validator.add_gamer_note(note, 'NOTE_OFF')
         fluidsynth.stop_NoteContainer(NoteContainer(notes_off))
         for note in notes_on:
             self.validator.add_gamer_note(note, 'NOTE_ON')
         fluidsynth.play_NoteContainer(NoteContainer(notes_on))
-        for note in notes_off:
-            self.validator.add_gamer_note(note, 'NOTE_OFF')
 
