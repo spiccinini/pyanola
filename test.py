@@ -25,9 +25,9 @@ class TextView(object):
 
     def step(self, ticks):
         self._accum -= ticks
-        self.time += ticks
         if self._accum <= 0:
             self._accum += self.tick
+            self.time += self.tick
             self.draw()
 
     def draw(self):
@@ -65,14 +65,14 @@ class FluidSynthSequencer(object):
     def __init__(self, score):
         self.score = score
         self.time = 0
-        self.tick = 50
+        self.tick = 20
         self._accum = self.tick
 
     def step(self, ticks):
         self._accum -= ticks
-        self.time += ticks
         if self._accum <= 0:
             self.play()
+            self.time += self.tick
             self._accum += self.tick
 
     def play(self):
@@ -89,22 +89,24 @@ def main():
     sequencer = FluidSynthSequencer(score)
     clear = os.popen("clear").read()
     g = open('times.txt', 'w')
-    start_time = time.time()
     fluidsynth.init('soundfont.sf2', 'oss')
 
     # get minimum resolution of components
-    dt_ticks = min(view.tick, sequencer.tick, score.tick)
-    step = dt_ticks / 1000.0
-
-    for i in range(max(score.notes.keys()) / view.tick):
-        #now = time.time()
-        #dt = now - start_time
-        #dt_ticks = dt * 1000
+    step = min(view.tick, sequencer.tick, score.tick) / 1000.0
+    dt = 0
+    last_time = now = time.time()
+    #for i in range(max(score.notes.keys()) / view.tick):
+    while True:
+        dt_ticks = dt * 1000
         #start_time += dt
         sys.stdout.write(clear)
         view.step(dt_ticks)
         sequencer.step(dt_ticks)
-        time.sleep(step)
+        last_time = now
+        now = time.time()
+        dt = now - last_time
+        if step > dt:
+            time.sleep(step - dt)
         #now = time.time()
         #dt = now - start_time
         #if step > dt:
