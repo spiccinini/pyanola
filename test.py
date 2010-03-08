@@ -15,14 +15,22 @@ class TextView(object):
         self.width = 50
         self.height = 61
         self.time = 0
+        self._accum = self.tick
+
         a = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6]
         self.h2l = []
         for i in range(100):
             octava = i / 12
             self.h2l.append(57 - octava*7 - a[i % 12])
 
+    def step(self, ticks):
+        self._accum -= ticks
+        self.time += ticks
+        if self._accum <= 0:
+            self._accum += self.tick
+            self.draw()
 
-    def print_next(self):
+    def draw(self):
         notes = []
         lines = [""] * self.height
         for instant in range(self.time, self.time + self.width * self.tick, self.tick):
@@ -47,8 +55,6 @@ class TextView(object):
                     lines[line_index] += template%stripe
             i += 1
 
-        self.time += self.tick
-
         for line in lines:
             print line
 
@@ -60,16 +66,24 @@ class FluidSynthSequencer(object):
         self.score = score
         self.time = 0
         self.tick = 100
-    def play_next(self):
+        self._accum = self.tick
+
+    def step(self, ticks):
+        self._accum -= ticks
+        self.time += ticks
+        if self._accum <= 0:
+            self.play()
+            self._accum += self.tick
+
+    def play(self):
         notes = self.score._starts_at(self.time)
         container = NoteContainer([note.fluidsynthname() for note in notes])
         fluidsynth.play_NoteContainer(container)
-        self.time += self.tick
 
 def main():
-    #composition = MidiFileIn.MIDI_to_Composition('test.mid')
-    #score = Score.from_track(composition[0].tracks[4], bpm=90)
-    score = SSVParse('libertango_piano.txt')
+    composition = MidiFileIn.MIDI_to_Composition('test.mid')
+    score = Score.from_track(composition[0].tracks[4], bpm=90)
+    #score = SSVParse('libertango_piano.txt')
     score.shift_all_notes(2000)
     view = TextView(score)
     sequencer = FluidSynthSequencer(score)
@@ -78,15 +92,23 @@ def main():
     start_time = time.time()
     fluidsynth.init('soundfont.sf2', 'oss')
 
-    for i in range(max(score.notes.keys()) / view.tick):
-        start_time += .1
+    #for i in range(max(score.notes.keys()) / view.tick):
+    step = 0.02
+    dt_ticks = 20
+    while True:
+        #now = time.time()
+        #dt = now - start_time
+        #dt_ticks = dt * 1000
+        #start_time += dt
         sys.stdout.write(clear)
-        view.print_next()
-        sequencer.play_next()
-        now = time.time()
-        if start_time > now:
-            time.sleep(start_time - now)
-
+        view.step(dt_ticks)
+        sequencer.step(dt_ticks)
+        time.sleep(step)
+        #now = time.time()
+        #dt = now - start_time
+        #if step > dt:
+        #    time.sleep(step - dt)
+        #start_time += dt
 
 
 if __name__ == '__main__':
