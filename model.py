@@ -29,7 +29,7 @@ class Score(object):
     def __init__(self, notes):
         self.notes = {}
         self.sounding_cache = set()
-        self.tick = 100
+        self.tick = 50
         for note in notes:
             note.delay = int(note.delay / 100) * 100
             if note.delay not in self.notes:

@@ -65,7 +65,7 @@ class FluidSynthSequencer(object):
     def __init__(self, score):
         self.score = score
         self.time = 0
-        self.tick = 100
+        self.tick = 50
         self._accum = self.tick
 
     def step(self, ticks):
@@ -82,9 +82,9 @@ class FluidSynthSequencer(object):
 
 def main():
     composition = MidiFileIn.MIDI_to_Composition('test.mid')
-    score = Score.from_track(composition[0].tracks[4], bpm=90)
+    score = Score.from_track(composition[0].tracks[4], bpm=120)
     #score = SSVParse('libertango_piano.txt')
-    score.shift_all_notes(2000)
+    score.shift_all_notes(1000)
     view = TextView(score)
     sequencer = FluidSynthSequencer(score)
     clear = os.popen("clear").read()
@@ -92,10 +92,11 @@ def main():
     start_time = time.time()
     fluidsynth.init('soundfont.sf2', 'oss')
 
-    #for i in range(max(score.notes.keys()) / view.tick):
-    step = 0.02
-    dt_ticks = 20
-    while True:
+    # get minimum resolution of components
+    dt_ticks = min(view.tick, sequencer.tick, score.tick)
+    step = dt_ticks / 1000.0
+
+    for i in range(max(score.notes.keys()) / view.tick):
         #now = time.time()
         #dt = now - start_time
         #dt_ticks = dt * 1000
