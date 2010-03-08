@@ -3,6 +3,7 @@ import time
 import sys
 from model import Score, Note
 from parser import SSVParse
+from validator import Validator
 
 from mingus.containers import *
 from mingus.midi import MidiFileIn
@@ -81,12 +82,17 @@ class FluidSynthSequencer(object):
         fluidsynth.play_NoteContainer(container)
 
 def main():
-    composition = MidiFileIn.MIDI_to_Composition('test.mid')
-    score = Score.from_track(composition[0].tracks[4], bpm=120)
+    #composition = MidiFileIn.MIDI_to_Composition('test.mid')
+    #score = Score.from_track(composition[0].tracks[4], bpm=90)
+    score = SSVParse('libertango_piano_slow.txt', resolution = 100)
+    score.shift_all_notes(2000)
+    #composition = MidiFileIn.MIDI_to_Composition('test.mid')
+    #score = Score.from_track(composition[0].tracks[4], bpm=120)
     #score = SSVParse('libertango_piano.txt')
-    score.shift_all_notes(1000)
+    #score.shift_all_notes(1000)
     view = TextView(score)
     sequencer = FluidSynthSequencer(score)
+    validator = Validator(score, margin=200)
     clear = os.popen("clear").read()
     g = open('times.txt', 'w')
     fluidsynth.init('soundfont.sf2', 'oss')
@@ -100,8 +106,10 @@ def main():
         dt_ticks = dt * 1000
         #start_time += dt
         sys.stdout.write(clear)
+        validator.step(dt_ticks)
         view.step(dt_ticks)
         sequencer.step(dt_ticks)
+        
         last_time = now
         now = time.time()
         dt = now - last_time

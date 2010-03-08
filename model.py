@@ -26,12 +26,13 @@ class Note(object):
         return "<Note: %s %s>" % (self.name(), self.duration)
 
 class Score(object):
-    def __init__(self, notes):
+    def __init__(self, notes, quantization):
         self.notes = {}
         self.sounding_cache = set()
-        self.tick = 20
+        self.tick = quantization
+
         for note in notes:
-            note.delay = int(note.delay / 100) * 100
+            note.delay = int(note.delay / quantization) * quantization
             if note.delay not in self.notes:
                 self.notes[note.delay] = set()
             self.notes[note.delay].add(note)
@@ -65,7 +66,7 @@ class Score(object):
                         duration = (1.0 / note[1]) * ticks_per_bar
                         notes.append(Note(delay, height, duration))
 
-        instance = Score(notes)
+        instance = Score(notes, quantization = 50)
         return instance
 
     def shift_all_notes(self, delay):
