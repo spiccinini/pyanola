@@ -8,17 +8,19 @@ from midi_input import MidiInput
 from model import Score, Note
 from parser import SSVParse
 from sequencer import FluidSynthSequencer, MidiPlayer
+from validator import Validator
 from view import TextView
 
 
 def main():
-    composition = MidiFileIn.MIDI_to_Composition('test.mid')
-    score = Score.from_track(composition[0].tracks[4], bpm=120)
-    #score = SSVParse('libertango_piano.txt')
+    #composition = MidiFileIn.MIDI_to_Composition('test.mid')
+    #score = Score.from_track(composition[0].tracks[4], bpm=120)
+    score = SSVParse('libertango_piano_slow.txt', 100)
     score.shift_all_notes(1000)
     view = TextView(score)
     sequencer = FluidSynthSequencer(score)
-    midi_player = MidiPlayer()
+    validator = Validator(score, margin=200)
+    midi_player = MidiPlayer(validator)
     keyboard = MidiInput('/dev/midi1')
     clear = os.popen("clear").read()
     g = open('times.txt', 'w')
@@ -42,6 +44,8 @@ def main():
             events.append(event)
 
         midi_player.play(events)
+
+        validator.step(dt_ticks)
 
         last_time = now
         now = time.time()

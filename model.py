@@ -5,6 +5,7 @@ class Note(object):
         self.delay = delay
         self.height = height
         self.duration = duration
+
     def name(self):
         octava = self.height / 12
         nota = self.height % 12
@@ -25,13 +26,20 @@ class Note(object):
     def __repr__(self):
         return "<Note: %s %s>" % (self.name(), self.duration)
 
+    @classmethod
+    def from_mingus_note(self, note, delay):
+        height = int(note)
+        duration = 0
+        return Note(delay, height, duration)
+
 class Score(object):
-    def __init__(self, notes):
+    def __init__(self, notes, quantization):
         self.notes = {}
         self.sounding_cache = set()
-        self.tick = 20
+        self.tick = quantization
+
         for note in notes:
-            note.delay = int(note.delay / 100) * 100
+            note.delay = int(note.delay / quantization) * quantization
             if note.delay not in self.notes:
                 self.notes[note.delay] = set()
             self.notes[note.delay].add(note)
@@ -65,7 +73,7 @@ class Score(object):
                         duration = (1.0 / note[1]) * ticks_per_bar
                         notes.append(Note(delay, height, duration))
 
-        instance = Score(notes)
+        instance = Score(notes, quantization = 50)
         return instance
 
     def shift_all_notes(self, delay):
