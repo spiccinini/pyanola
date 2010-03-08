@@ -31,27 +31,35 @@ def main():
     dt = 0
     last_time = now = time.time()
     #for i in range(max(score.notes.keys()) / view.tick):
-    while True:
-        dt_ticks = dt * 1000
-        sys.stdout.write(clear)
-        view.step(dt_ticks)
-        sequencer.step(dt_ticks)
-        events = []
+    puntos = 0
+    try:
         while True:
-            event = keyboard.poll()
-            if event is None:
-                break
-            events.append(event)
+            dt_ticks = dt * 1000
+            sys.stdout.write(clear)
+            view.step(dt_ticks)
+            sequencer.step(dt_ticks)
+            events = []
+            while True:
+                event = keyboard.poll()
+                if event is None:
+                    break
+                events.append(event)
 
-        midi_player.play(events)
+            midi_player.play(events)
 
-        validator.step(dt_ticks)
+            puntos += validator.step(dt_ticks)
 
-        last_time = now
-        now = time.time()
-        dt = now - last_time
-        if step > dt:
-            time.sleep(step - dt)
+            last_time = now
+            now = time.time()
+            dt = now - last_time
+            if step > dt:
+                time.sleep(step - dt)
+    except KeyboardInterrupt:
+        pass
+    except Exception, e:
+        print e
+
+    print 'Total de puntos: ', puntos
 
 if __name__ == '__main__':
     main()

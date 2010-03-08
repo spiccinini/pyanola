@@ -75,16 +75,17 @@ class Validator(object):
         self.margin = margin 
 
     def step(self, ticks):
+        puntos = 0
         self._accum -= ticks
         if self._accum <= 0:
             notes = self.score._starts_at(self.time)
             for note in notes:
                 self.add_reference_note(note)
             result = self.validate()
-            for item in result:
-                print item.acierto
+            puntos = sum([i.puntos for i in result])
             self.time += self.tick
             self._accum += self.tick
+        return puntos
 
     #def step(self, dt):
         #notes = self.score._starts_at(self.time)
@@ -131,7 +132,7 @@ class Validator(object):
                     # Comparacion de tiempos    
                     if ref_event.delay + self.margin >= gamer_event.delay and\
                      ref_event.delay - self.margin <= gamer_event.delay:
-                        results.append(Resultado(acierto=True))
+                        results.append(Resultado(acierto=True, puntos=10))
                         ref_events_to_trash.append(ref_event)
                         quitado = True
                         gamer_events_to_trash.append(gamer_event)
@@ -139,7 +140,7 @@ class Validator(object):
                         break
                     else:
                         print "quito refernce 1"
-                        results.append(Resultado(acierto=False))
+                        results.append(Resultado(acierto=False, puntos=-10))
                         ref_events_to_trash.append(ref_event)
             # Ver si se acaba de vencer o si estaba vencida
             if not quitado:
@@ -148,11 +149,11 @@ class Validator(object):
                     ref_events_to_trash.append(ref_event)
                     quitado = True
                     print "quitando ref event vencido"
-                    results.append(Resultado(acierto=False))
+                    results.append(Resultado(acierto=False, puntos=-10))
         for gamer_event in self.gamer_events:
              # Vencido?
                 if self.time - self.margin > gamer_event.delay:
-                    results.append(Resultado(acierto=False))                
+                    results.append(Resultado(acierto=False, puntos=-10))                
                     gamer_events_to_trash.append(gamer_event)
 
         [self.gamer_events.remove(ev) for ev in gamer_events_to_trash]
