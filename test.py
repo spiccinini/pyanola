@@ -3,6 +3,7 @@ import time
 import sys
 from model import Score, Note
 from parser import SSVParse
+from validator import Validator
 
 from mingus.containers import *
 from mingus.midi import MidiFileIn
@@ -69,8 +70,9 @@ class FluidSynthSequencer(object):
 def main():
     #composition = MidiFileIn.MIDI_to_Composition('test.mid')
     #score = Score.from_track(composition[0].tracks[4], bpm=90)
-    score = SSVParse('libertango_piano.txt')
+    score = SSVParse('libertango_piano.txt', resolution = 100)
     score.shift_all_notes(2000)
+    validator = Validator(score, margin=200)
     view = TextView(score)
     sequencer = FluidSynthSequencer(score)
     clear = os.popen("clear").read()
@@ -83,6 +85,7 @@ def main():
         sys.stdout.write(clear)
         view.print_next()
         sequencer.play_next()
+        validator.step(1.0)
         now = time.time()
         if start_time > now:
             time.sleep(start_time - now)

@@ -26,12 +26,12 @@ class Note(object):
         return "<Note: %s %s>" % (self.name(), self.duration)
 
 class Score(object):
-    def __init__(self, notes):
+    def __init__(self, notes, resolution):
         self.notes = {}
         self.sounding_cache = set()
-        self.tick = 100
+        self.tick = resolution
         for note in notes:
-            note.delay = int(note.delay / 100) * 100
+            note.delay = int(note.delay / resolution) * resolution
             if note.delay not in self.notes:
                 self.notes[note.delay] = set()
             self.notes[note.delay].add(note)

@@ -1,6 +1,6 @@
 from model import Score, Note
 
-def SSVParse(filename):
+def SSVParse(filename, resolution):
     g = open(filename)
     notes = []
     playing = [None] * 128
@@ -15,4 +15,4 @@ def SSVParse(filename):
             if playing[height] is not None:
                 note = Note(playing[height], height, delay-playing[height])
                 notes.append(note)
-    return Score(notes)
+    return Score(notes, resolution)
