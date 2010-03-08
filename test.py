@@ -15,7 +15,7 @@ from view import TextView
 def main():
     #composition = MidiFileIn.MIDI_to_Composition('test.mid')
     #score = Score.from_track(composition[0].tracks[4], bpm=120)
-    score = SSVParse('libertango_piano_slow.txt', 100)
+    score = SSVParse('libertango_piano.txt', 100)
     score.shift_all_notes(1000)
     view = TextView(score)
     sequencer = FluidSynthSequencer(score)
