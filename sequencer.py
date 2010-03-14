@@ -5,20 +5,17 @@ class FluidSynthSequencer(object):
     def __init__(self, score):
         self.score = score
         self.time = 0
-        self.tick = 20
-        self._accum = self.tick
+        self.played = set()
+        self.tick = 10
 
     def step(self, ticks):
-        self._accum -= ticks
-        if self._accum <= 0:
-            self.play()
-            self.time += self.tick
-            self._accum += self.tick
-
-    def play(self):
-        notes = self.score._starts_at(self.time)
-        container = NoteContainer([note.fluidsynthname() for note in notes])
+        self.time += ticks
+        new = [n for n in self.score.sounding_at(self.time) if not n in self.played]
+        container = NoteContainer([note.fluidsynthname() for note in new])
         fluidsynth.play_NoteContainer(container)
+        remove = [n for n in self.played if self.time >= n.delay + n.duration]
+        self.played.difference_update(remove)
+        self.played.update(new)
 
 class MidiPlayer(object):
     def __init__(self, validator):

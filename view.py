@@ -37,7 +37,7 @@ class TextView(object):
                 template = "%s"
             for note in instant:
                 if len(lines[self.h2l[note.height]]) < 3 * i:
-                    if note.delay < (self.width - i - 1) * self.tick + self.time:
+                    if note.delay < (self.width - i - 2) * self.tick + self.time:
                         lines[self.h2l[note.height]] +=template%"..."
                     else:
                         lines[self.h2l[note.height]]+=template%note.name()

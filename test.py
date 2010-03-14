@@ -27,7 +27,7 @@ def main():
     fluidsynth.init('soundfont.sf2', 'oss')
 
     # get minimum resolution of components
-    step = min(view.tick, sequencer.tick, score.tick) / 1000.0
+    step = min(view.tick, sequencer.tick) / 1000.0
     dt = 0
     last_time = now = time.time()
     #for i in range(max(score.notes.keys()) / view.tick):

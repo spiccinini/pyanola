@@ -69,7 +69,7 @@ class Validator(object):
         self.reference_events = []
         self.gamer_events = []
         self.score = score
-        self.tick = score.tick
+        self.tick = 100
         self.time =  0
         self._accum = 0
         self.margin = margin 
@@ -78,7 +78,7 @@ class Validator(object):
         puntos = 0
         self._accum -= ticks
         if self._accum <= 0:
-            notes = self.score._starts_at(self.time)
+            notes = self.score.starts_at(self.time)
             for note in notes:
                 self.add_reference_note(note)
             result = self.validate()
@@ -88,7 +88,7 @@ class Validator(object):
         return puntos
 
     #def step(self, dt):
-        #notes = self.score._starts_at(self.time)
+        #notes = self.score.starts_at(self.time)
         #for note in notes:
         #    self.add_reference_note(note)
         #print [str(ev) for ev in self.reference_events]
