@@ -4,7 +4,7 @@ import time
 
 from mingus.midi import MidiFileIn, fluidsynth
 
-from midi_input import MidiInput
+from midi_input import MidiInput, NoneInput
 from model import Score, Note
 from parser import SSVParse
 from sequencer import FluidSynthSequencer, MidiPlayer
@@ -21,7 +21,13 @@ def main():
     sequencer = FluidSynthSequencer(score)
     validator = Validator(score, margin=200)
     midi_player = MidiPlayer(validator)
-    keyboard = MidiInput('/dev/midi1')
+    try:
+        keyboard = MidiInput('/dev/midi1')
+    except IOError,e:
+        print e
+        print "Falling back to NoneInput"
+        keyboard = NoneInput()
+
     clear = os.popen("clear").read()
     g = open('times.txt', 'w')
     fluidsynth.init('soundfont.sf2', 'oss')
@@ -36,16 +42,13 @@ def main():
         while True:
             dt_ticks = dt * 1000
             sys.stdout.write(clear)
+            
             view.step(dt_ticks)
             sequencer.step(dt_ticks)
-            events = []
-            while True:
-                event = keyboard.poll()
-                if event is None:
-                    break
-                events.append(event)
-
-            midi_player.play(events)
+            
+            events = keyboard.get_events()
+            if events:
+                midi_player.play(events)
 
             puntos += validator.step(dt_ticks)
 

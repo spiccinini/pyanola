@@ -62,6 +62,19 @@ class MidiInput(object):
             event = self.getevent()
             return event
 
+    def get_events(self):
+        events = []
+        while True:
+            event = self.poll()
+            if event is None:
+                break
+            events.append(event)
+        return events
+
+class NoneInput(object):
+    def get_events(self):
+        return []
+
 if __name__ == "__main__":
     import time
     mi = MidiInput("/dev/midi1")
