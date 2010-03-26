@@ -24,6 +24,7 @@ class MidiPlayer(object):
     def play(self, events):
         notes_on = [e.to_ming_note() for e in events if e.command_type == 'NOTE_ON']
         notes_off = [e.to_ming_note() for e in events if e.command_type == 'NOTE_OFF']
+        #import pdb; pdb.set_trace()
         for note in notes_off:
             self.validator.add_gamer_note(note, 'NOTE_OFF')
         fluidsynth.stop_NoteContainer(NoteContainer(notes_off))
