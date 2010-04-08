@@ -87,14 +87,6 @@ class Validator(object):
             self._accum += self.tick
         return puntos
 
-    #def step(self, dt):
-        #notes = self.score.starts_at(self.time)
-        #for note in notes:
-        #    self.add_reference_note(note)
-        #print [str(ev) for ev in self.reference_events]
-        #print self.validate()
-        #self.time += self.tick
-        
     def add_reference_event(self):
         raise NotImplementedError
 
