@@ -18,5 +18,4 @@ def SSVParse(filename, resolution):
             if playing[height] is not None:
                 note = Note(playing[height], height, delay-playing[height])
                 notes.append(note)
-    print notes
     return Score(notes)

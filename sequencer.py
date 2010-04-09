@@ -16,6 +16,14 @@ class FluidSynthSequencer(object):
         self.played.difference_update(remove)
         self.played.update(new)
 
+class DummySequencer(object):
+    def __init__(self, score):
+        self.score = score
+        self.time = 0
+
+    def step(self, ticks):
+        self.time += ticks
+
 class MidiPlayer(object):
     def __init__(self, validator):
         self.validator = validator

@@ -128,10 +128,8 @@ class Validator(object):
                         ref_events_to_trash.append(ref_event)
                         quitado = True
                         gamer_events_to_trash.append(gamer_event)
-                        print "quito ambos"
                         break
                     else:
-                        print "quito refernce 1"
                         results.append(Resultado(acierto=False, puntos=-10))
                         ref_events_to_trash.append(ref_event)
             # Ver si se acaba de vencer o si estaba vencida
@@ -140,7 +138,6 @@ class Validator(object):
                 if self.time - self.margin > ref_event.delay:                
                     ref_events_to_trash.append(ref_event)
                     quitado = True
-                    print "quitando ref event vencido"
                     results.append(Resultado(acierto=False, puntos=-10))
         for gamer_event in self.gamer_events:
              # Vencido?
