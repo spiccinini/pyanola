@@ -60,7 +60,7 @@ class CocosNoteView(cocos.layer.Layer):
         super(CocosNoteView, self).__init__()
 
         self.score = score
-        self.tick = 100
+        self.tick = 50
         self._accum = self.tick
         self.notes = []
         self.time_corrido = 1200

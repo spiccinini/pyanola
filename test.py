@@ -55,7 +55,12 @@ AUDIO_BACKENDS = ["oss", "alsa", "none"]
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(prog="pyanola", description='The music learning machine')
+    parser = argparse.ArgumentParser(prog="pyanola", description='The music learning machine',
+                        epilog='''
+                        Usage examples:
+                        python %(prog)s -r ssv -f libertango_piano_slow.txt -v cocos
+                        python %(prog)s -r midi -f file.mid -t 4 -b 120 -a alsa -v text
+                        ''')
     parser.add_argument('-i', '--input', action='store', choices=USER_INPUTS,
                         default="keyboard", help='select user input (default: %(default)s)')
     parser.add_argument('-m', '--midi', help='midi input. Required if -i midi(like: /dev/midi)')
@@ -87,7 +92,7 @@ if __name__ == '__main__':
         composition = MidiFileIn.MIDI_to_Composition(args.file)
         score = Score.from_track(composition[0].tracks[args.track], bpm=args.bpm)
     elif args.reftype == "ssv":
-        score = SSVParse(args.file, 10)
+        score = SSVParse(args.file, 50)
 
     score.shift_all_notes(1000)
 
@@ -107,7 +112,7 @@ if __name__ == '__main__':
 
     # view
     if issubclass(VIEWS[args.view], cocos.layer.Layer): # cualquier CocosView
-        director.init(resizable=True)
+        director.init()
         view = VIEWS[args.view](score)
         pyglet.clock.schedule_interval(update, step)
         keyboard = CocosKeyboardInput()
