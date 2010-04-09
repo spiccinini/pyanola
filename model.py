@@ -24,6 +24,9 @@ class Note(object):
     def __repr__(self):
         return "<Note:%s %s>" % (self.name(), self.duration)
 
+    def __str__(self):
+        return "%s-%s" % (self.name(), self.duration)
+
     @classmethod
     def from_mingus_note(self, note, delay):
         height = int(note)
