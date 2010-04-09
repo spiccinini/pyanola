@@ -73,7 +73,7 @@ class CocosNoteView(cocos.layer.Layer):
             self.time += self.tick
             self.notes = self.score.starts_at(self.time)
             for note in self.notes:
-                text = cocos.text.Label(str(note), x=400, y=(note.height-34)*16)
+                text = cocos.text.Label(str(note), position=(400, (note.height-34)*16))
                 action = cocos.actions.MoveBy((-700, 0), 4)
                 text.do(action)
                 self.add(text)
@@ -104,7 +104,7 @@ class CocosKeyDisplay(cocos.layer.Layer):
 
         super(CocosKeyDisplay, self).__init__()
 
-        self.text = cocos.text.Label("", x=100, y=280 )
+        self.text = cocos.text.Label("", position=(100, 280))
 
         # To keep track of which keys are pressed:
         self.keys_pressed = set()
