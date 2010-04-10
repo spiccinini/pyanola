@@ -13,24 +13,24 @@ add_gamer_event
 
 
 validar()
-    return list(acierto1, acierto2, ..., miss1, miss2, ...) 
+    return list(acierto1, acierto2, ..., miss1, miss2, ...)
 """
 
 
 #DISTANCIA OK:    A__N__B  (intervalo de 7)
 #NORMAL:
 #
-#REF:     A___________________________B                           
-#                A__________________________________B                
-#                          A___B                         
-#                                                   
-#                                                   
-#                                                   
-#PLY:     A___________________________B     A________________B    
-#             A_________________________________B                
-#                      A_______B                         
-#                                                   
-#                                                   
+#REF:     A___________________________B
+#                A__________________________________B
+#                          A___B
+#
+#
+#
+#PLY:     A___________________________B     A________________B
+#             A_________________________________B
+#                      A_______B
+#
+#
 #RSL:     B   B        M_______N______B_____M___M____________N
 #
 
@@ -38,6 +38,9 @@ class Resultado(object):
     def __init__(self, acierto, puntos=0):
         self.puntos = puntos
         self.acierto = acierto # True o False
+
+    def __str__(self):
+        return "acierto: %d, puntos: %d" % (self.acierto, self.puntos)
 
 EVENTS = ('NOTE_ON', 'NOTE_OFF')
 
@@ -48,7 +51,7 @@ class EventMeta(type):
     def __init__(self, *atrs):
         return type.__init__(self, *atrs)
 
-class Event(object):  
+class Event(object):
     __metaclass__ = EventMeta
     def __init__(self, type, delay, data):
         self.type = type
@@ -72,7 +75,7 @@ class Validator(object):
         self.tick = 100
         self.time =  0
         self._accum = 0
-        self.margin = margin 
+        self.margin = margin
 
     def step(self, ticks):
         puntos = 0
@@ -90,15 +93,22 @@ class Validator(object):
     def add_reference_event(self):
         raise NotImplementedError
 
-    def add_gamer_event(self):
-        raise NotImplementedError
-        
+    def add_gamer_event(self, event):
+        self.gamer_events.append(event)
+
     def add_reference_note(self, note):
         # Agrega 2 eventos, NOTE_ON y NOTE_OFF
+        """
+        Add a model.Note note to the validator gamer events.
+        """
         self.reference_events.append(Event(Event.NOTE_ON, note.delay, note))
         self.reference_events.append(Event(Event.NOTE_OFF, quantize(note.delay+note.duration, self.tick), note))
 
     def add_gamer_note(self, note, command_type):
+        """
+        Add a mingus note to the validator gamer events.
+        """
+        print type(note)
         # Agrega 2 eventos, NOTE_ON y NOTE_OFF
         delay = self.time
         note = Note.from_mingus_note(note, delay)
@@ -121,32 +131,32 @@ class Validator(object):
             quitado = False
             for gamer_event in self.gamer_events:
                 if gamer_event == ref_event:
-                    # Comparacion de tiempos    
+                    # Comparacion de tiempos
                     if ref_event.delay + self.margin >= gamer_event.delay and\
                      ref_event.delay - self.margin <= gamer_event.delay:
-                        results.append(Resultado(acierto=True, puntos=10))
+                        gamer_events_to_trash.append(gamer_event)
                         ref_events_to_trash.append(ref_event)
                         quitado = True
-                        gamer_events_to_trash.append(gamer_event)
+                        results.append(Resultado(acierto=True, puntos=10))
                         break
                     else:
-                        results.append(Resultado(acierto=False, puntos=-10))
                         ref_events_to_trash.append(ref_event)
+                        quitado = True
+                        results.append(Resultado(acierto=False, puntos=-10))
             # Ver si se acaba de vencer o si estaba vencida
             if not quitado:
                 # Vencido?
-                if self.time - self.margin > ref_event.delay:                
+                if self.time - self.margin > ref_event.delay:
                     ref_events_to_trash.append(ref_event)
                     quitado = True
                     results.append(Resultado(acierto=False, puntos=-10))
         for gamer_event in self.gamer_events:
              # Vencido?
                 if self.time - self.margin > gamer_event.delay:
-                    results.append(Resultado(acierto=False, puntos=-10))                
+                    results.append(Resultado(acierto=False, puntos=-10))
                     gamer_events_to_trash.append(gamer_event)
-
         [self.gamer_events.remove(ev) for ev in gamer_events_to_trash]
         [self.reference_events.remove(ev) for ev in ref_events_to_trash]
         return results
 
-        
+
