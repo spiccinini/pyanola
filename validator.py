@@ -108,7 +108,6 @@ class Validator(object):
         """
         Add a mingus note to the validator gamer events.
         """
-        print type(note)
         # Agrega 2 eventos, NOTE_ON y NOTE_OFF
         delay = self.time
         note = Note.from_mingus_note(note, delay)

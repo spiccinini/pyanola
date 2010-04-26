@@ -3,6 +3,7 @@ import pyglet
 import cocos
 import midi_input
 from midi_input import MidiEvent
+from mapkeytomidi import MapKeyToMidi
 
 class TextView(object):
     def __init__(self, score):
@@ -54,6 +55,7 @@ class TextView(object):
         for line in lines:
             print line
 
+
 class CocosNoteView(cocos.layer.Layer):
     #is_event_handler = True     #: enable pyglet's events
     def __init__(self, score):
@@ -81,22 +83,35 @@ class CocosNoteView(cocos.layer.Layer):
     def draw(self):
         pass
 
+
 class CocosKeyboardInput(cocos.layer.ColorLayer):
+    """
+    Layer to get keyboard input keys.
+    """
     is_event_handler = True     #: enable pyglet's events
     def __init__(self):
         super(CocosKeyboardInput, self).__init__(0,0,0,0)
         self.events = []
+        self.key_maper = MapKeyToMidi()
 
     def on_key_press (self, key, modifiers):
-        self.events.append(MidiEvent(midi_input.NOTE_ON, int(key), 120))
+        try:
+            self.events.append(MidiEvent(midi_input.NOTE_ON, self.key_maper(key), 120))
+        except KeyError, e:
+            print e
 
     def on_key_release (self, key, modifiers):
-        self.events.append(MidiEvent(midi_input.NOTE_OFF, int(key), 120))
+        #import pdb;pdb.set_trace()
+        try:
+            self.events.append(MidiEvent(midi_input.NOTE_OFF, self.key_maper(key), 120))
+        except KeyError, e:
+            pass
 
     def get_events(self):
         re = self.events[:] # FEO!s
         self.events = []
         return re
+
 
 class CocosKeyDisplay(cocos.layer.Layer):
     is_event_handler = True     #: enable pyglet's events
